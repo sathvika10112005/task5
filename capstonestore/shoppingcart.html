@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shopping Cart</title>
+  <link rel="stylesheet" href="css/capstonestyle.css" />
+  <style>
+    .cart-container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ccc;
+      padding: 15px 0;
+    }
+    .cart-item img {
+      width: 100px;
+      height: auto;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+    .cart-info {
+      flex: 1;
+      margin-left: 20px;
+    }
+    .cart-actions {
+      text-align: right;
+    }
+    .cart-actions button {
+      padding: 6px 12px;
+      margin: 0 2px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .cart-actions button:hover {
+      background: #0056b3;
+    }
+    .remove-btn {
+      background: #e53935;
+    }
+    .remove-btn:hover {
+      background: #c62828;
+    }
+    .order-summary {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 1.1rem;
+    }
+    .place-order {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .place-order:hover {
+      background-color: #1e7e34;
+    }
+    .payment-method {
+      margin-top: 20px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🛒 Shopping Cart</h1>
+    <nav>
+      <a href="homepage.html">Home</a>
+      <a href="shoppingcart.html">Cart</a>
+      <a href="contactsupport.html">Contact</a>
+    </nav>
+  </header>
+
+  <div class="cart-container" id="cartContainer">
+    <!-- JavaScript will render items here -->
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Capstone Project</p>
+  </footer>
+
+  <script>
+    const productList = {
+      1: { title: "Stylish Bag", price: 20.0, image: "assets/images/bag1.jpg" },
+      2: { title: "Elegant Handbag", price: 35.0, image: "assets/images/bag2.jpg" },
+      3: { title: "Leather Shoe", price: 45.0, image: "assets/images/shoe1.jpg" },
+      4: { title: "Formal Pair", price: 55.0, image: "assets/images/shoe2.jpg" },
+    };
+
+    const cartContainer = document.getElementById("cartContainer");
+
+    function renderCart() {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      if (cart.length === 0) {
+        cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+        return;
+      }
+
+      cartContainer.innerHTML = "";
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        const product = productList[item.id];
+        const itemTotal = product.price * item.quantity;
+        total += itemTotal;
+
+        cartContainer.innerHTML += `
+          <div class="cart-item">
+            <img src="${product.image}" alt="${product.title}" />
+            <div class="cart-info">
+              <h3>${product.title}</h3>
+              <p>Price: $${product.price.toFixed(2)}</p>
+              <p>Qty: 
+                <button onclick="updateQty(${index}, -1)">-</button>
+                ${item.quantity}
+                <button onclick="updateQty(${index}, 1)">+</button>
+              </p>
+            </div>
+            <div class="cart-actions">
+              <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
+            </div>
+          </div>
+        `;
+      });
+
+      cartContainer.innerHTML += `
+        <div class="payment-method">
+          <label for="payment">Choose Payment Method:</label>
+          <select id="payment">
+            <option value="cod">Cash on Delivery</option>
+            <option value="upi">UPI</option>
+            <option value="card">Credit/Debit Card</option>
+          </select>
+        </div>
+        <div class="order-summary">
+          <strong>Total: $${total.toFixed(2)}</strong><br/>
+          <button class="place-order" onclick="placeOrder()">Place Order</button>
+        </div>
+      `;
+    }
+
+    function updateQty(index, change) {
+      let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      cart[index].quantity += change;
+      if (cart[index].quantity < 1) cart[index].quantity = 1;
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function removeFromCart(index) {
+      let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function placeOrder() {
+      const paymentMethod = document.getElementById("payment").value;
+      const methodLabel = {
+        cod: "Cash on Delivery",
+        upi: "UPI",
+        card: "Credit/Debit Card"
+      }[paymentMethod];
+
+      alert(`✅ Order placed successfully!\nPayment Method: ${methodLabel}`);
+      localStorage.removeItem("cart");
+      renderCart();
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capstone Store</title>
+  <link rel="stylesheet" href="css/capstonestyle.css" />
+</head>
+<body>
+  <header>
+    <h1>🛍️ Capstone Store</h1>
+    <nav>
+      <a href="homepage.html">Home</a>
+      <a href="shoppingcart.html">Cart</a>
+      <a href="contactsupport.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="product-grid">
+    <div class="product-card" data-id="1">
+      <img class="lazy" data-src="assets/images/bag1.jpg" alt="Stylish Bag" />
+      <h2>Stylish Bag</h2><p>$20.00</p>
+      <button onclick="addToCart(1)">Add to Cart</button>
+    </div>
+    <div class="product-card" data-id="2">
+      <img class="lazy" data-src="assets/images/bag2.jpg" alt="Elegant Handbag" />
+      <h2>Elegant Handbag</h2><p>$35.00</p>
+      <button onclick="addToCart(2)">Add to Cart</button>
+    </div>
+    <div class="product-card" data-id="3">
+      <img class="lazy" data-src="assets/images/shoe1.jpg" alt="Leather Shoe" />
+      <h2>Leather Shoe</h2><p>$45.00</p>
+      <button onclick="addToCart(3)">Add to Cart</button>
+    </div>
+    <div class="product-card" data-id="4">
+      <img class="lazy" data-src="assets/images/shoe2.jpg" alt="Formal Pair" />
+      <h2>Formal Pair</h2><p>$55.00</p>
+      <button onclick="addToCart(4)">Add to Cart</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Capstone Project</p>
+  </footer>
+
+  <script src="js/storefunctions.js"></script>
+
+  <!-- Lightbox Modal -->
+  <div id="lightbox" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000;">
+    <img id="lightbox-img" src="" style="max-width:90%; max-height:90%; border:4px solid #fff; border-radius:10px;" />
+  </div>
+
+  <script>
+    // Lazy load images
+    document.addEventListener("DOMContentLoaded", () => {
+      const lazyImgs = document.querySelectorAll("img.lazy");
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            img.src = img.dataset.src;
+            img.classList.remove("lazy");
+            observer.unobserve(img);
+          }
+        });
+      });
+      lazyImgs.forEach(img => observer.observe(img));
+    });
+
+    // Image lightbox
+    document.querySelectorAll(".product-card img").forEach(img => {
+      img.addEventListener("click", () => {
+        const src = img.dataset.src || img.src;
+        document.getElementById("lightbox-img").src = src;
+        document.getElementById("lightbox").style.display = "flex";
+      });
+    });
+
+    document.getElementById("lightbox").addEventListener("click", () => {
+      document.getElementById("lightbox").style.display = "none";
+    });
+
+    // Add to cart function
+    function addToCart(id) {
+      let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      cart.push({ id: id, quantity: 1 });
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("Added to cart!");
+    }
+  </script>
+</body>
+</html>
